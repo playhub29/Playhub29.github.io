@@ -1,67 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>2048</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-body {
-  margin: 0;
-  background: #faf8ef;
-  font-family: Arial, sans-serif;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-}
-.container {
-  text-align: center;
-}
-h1 {
-  margin-bottom: 10px;
-}
-.grid {
-  width: 260px;
-  display: grid;
-  grid-template-columns: repeat(4, 60px);
-  gap: 5px;
-  margin: auto;
-}
-.tile {
-  width: 60px;
-  height: 60px;
-  background: #cdc1b4;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  font-weight: bold;
-  border-radius: 6px;
-}
-.note {
-  margin-top: 10px;
-  font-size: 12px;
-  opacity: 0.6;
-}
-</style>
+  <meta charset="UTF-8">
+  <title>PlayHub – Unblocked Games</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(180deg, #020617, #0f172a);
+      color: white;
+    }
+    header {
+      background: #020617;
+      padding: 16px;
+      text-align: center;
+      font-size: 22px;
+      font-weight: bold;
+    }
+    .container {
+      max-width: 1100px;
+      margin: auto;
+      padding: 16px;
+    }
+    .game-card {
+      background: #020617;
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    }
+    .game-card h2 {
+      margin: 0 0 12px 0;
+      font-size: 20px;
+    }
+    iframe {
+      width: 100%;
+      height: 500px;
+      border: none;
+      border-radius: 12px;
+      background: black;
+    }
+    @media (max-width: 600px) {
+      iframe {
+        height: 380px;
+      }
+    }
+    footer {
+      text-align: center;
+      opacity: 0.6;
+      font-size: 13px;
+      padding: 16px;
+    }
+  </style>
 </head>
 
 <body>
+
+<header>🎮 PlayHub</header>
+
 <div class="container">
-  <h1>2048</h1>
-  <div class="grid">
-    <div class="tile">2</div>
-    <div class="tile">4</div>
-    <div class="tile">8</div>
-    <div class="tile">16</div>
-    <div class="tile">32</div>
-    <div class="tile">64</div>
-    <div class="tile">128</div>
-    <div class="tile">256</div>
+
+  <div class="game-card">
+    <h2>2048</h2>
+    <iframe src="games/2048/index.html"></iframe>
   </div>
-  <div class="note">
-    Full version coming next
-  </div>
+
 </div>
+
+<footer>
+  © 2026 PlayHub — More games coming soon
+</footer>
+
 </body>
 </html>

@@ -1,193 +1,129 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>PlayHub</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PlayHub</title>
 
-<link id="favicon" rel="icon" href="https://www.google.com/favicon.ico">
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, Helvetica, sans-serif;
+    }
 
-<style>
-body {
-  margin: 0;
-  background: #0f172a;
-  color: white;
-  font-family: Arial, sans-serif;
-}
+    body {
+      margin: 0;
+      background: radial-gradient(circle at top, #0f172a, #020617);
+      color: white;
+      min-height: 100vh;
+    }
 
-header {
-  padding: 20px;
-  text-align: center;
-  background: #020617;
-}
+    header {
+      padding: 20px;
+      text-align: center;
+      font-size: 28px;
+      font-weight: bold;
+      background: rgba(0,0,0,0.3);
+      backdrop-filter: blur(10px);
+    }
 
-h1 {
-  margin: 0;
-  font-size: 28px;
-}
+    header span {
+      margin-right: 8px;
+    }
 
-p {
-  margin: 5px 0;
-  color: #94a3b8;
-}
+    .container {
+      max-width: 1100px;
+      margin: auto;
+      padding: 20px;
+    }
 
-#controls {
-  margin-top: 12px;
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  flex-wrap: wrap;
-}
+    h2 {
+      margin-top: 30px;
+      margin-bottom: 15px;
+      font-size: 22px;
+      color: #e5e7eb;
+    }
 
-select, input {
-  padding: 8px 10px;
-  border-radius: 6px;
-  border: none;
-  font-size: 14px;
-}
+    /* GRID */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 15px;
+    }
 
-#games {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 16px;
-  padding: 20px;
-}
+    /* CARD */
+    .card {
+      background: linear-gradient(145deg, #111827, #020617);
+      border-radius: 14px;
+      padding: 20px;
+      text-align: center;
+      text-decoration: none;
+      color: white;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    }
 
-.game {
-  background: #1e293b;
-  border-radius: 12px;
-  padding: 16px;
-  text-align: center;
-  text-decoration: none;
-  color: white;
-  transition: transform 0.15s, background 0.15s;
-}
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.6);
+    }
 
-.game:hover {
-  background: #334155;
-  transform: scale(1.04);
-}
+    .card span {
+      font-size: 36px;
+      display: block;
+      margin-bottom: 10px;
+    }
 
-.game span {
-  font-size: 36px;
-  display: block;
-}
-
-.score {
-  font-size: 12px;
-  color: #94a3b8;
-  margin-top: 6px;
-}
-
-footer {
-  text-align: center;
-  padding: 10px;
-  font-size: 12px;
-  color: #64748b;
-}
-</style>
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #9ca3af;
+      font-size: 14px;
+      margin-top: 40px;
+    }
+  </style>
 </head>
+
 <body>
 
-<header>
-  <h1 id="titleText">PlayHub</h1>
-  <p>Unblocked Games • Fast • Free</p>
+  <header>
+    🎮 PlayHub
+  </header>
 
-  <div id="controls">
-    <!-- Search -->
-    <input type="text" id="search" placeholder="Search games..." onkeyup="filterGames()">
+  <div class="container">
 
-    <!-- Tab Cloak -->
-    <select onchange="cloak(this.value)">
-      <option value="">Tab Cloak</option>
-      <option value="docs">Google Docs</option>
-      <option value="classroom">Google Classroom</option>
-      <option value="drive">Google Drive</option>
-      <option value="schoology">Schoology</option>
-      <option value="blank">Blank</option>
-    </select>
+    <!-- GAMES SECTION -->
+    <h2>Games</h2>
+    <div class="grid">
+
+      <a class="card" href="games/2048/">
+        <span>🧩</span>
+        2048
+      </a>
+
+      <a class="card" href="games/snake/">
+        <span>🐍</span>
+        Snake
+      </a>
+
+    </div>
+
+    <!-- APPS / SEARCH (FOR LATER) -->
+    <h2>Apps</h2>
+    <div class="grid">
+
+      <a class="card" href="apps/search.html">
+        <span>🌐</span>
+        Search
+      </a>
+
+    </div>
+
   </div>
-</header>
 
-<section id="games">
-  <a class="game" href="games/2048/" data-name="2048">
-    <span>🧩</span>
-    2048
-    <div class="score" id="score-2048">Best: 0</div>
-  </a>
-
-  <a class="game" href="games/snake/" data-name="snake">
-    <span>🐍</span>
-    Snake
-    <div class="score" id="score-snake">Best: 0</div>
-  </a>
-</section>
-
-<footer>
-  Press <b>~</b> or <b>ESC</b> for Panic
-</footer>
-
-<script>
-/* ---------------- TAB CLOAK ---------------- */
-const presets = {
-  docs: {
-    title: "Google Docs",
-    icon: "https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico"
-  },
-  classroom: {
-    title: "Google Classroom",
-    icon: "https://www.gstatic.com/classroom/favicon.png"
-  },
-  drive: {
-    title: "My Drive - Google Drive",
-    icon: "https://ssl.gstatic.com/images/branding/product/1x/drive_2020q4_32dp.png"
-  },
-  schoology: {
-    title: "Schoology",
-    icon: "https://www.schoology.com/favicon.ico"
-  },
-  blank: {
-    title: "New Tab",
-    icon: "https://www.google.com/favicon.ico"
-  }
-};
-
-function cloak(type) {
-  if (!presets[type]) return;
-  document.title = presets[type].title;
-  document.getElementById("favicon").href = presets[type].icon;
-  document.getElementById("titleText").textContent = presets[type].title;
-  localStorage.setItem("cloak", type);
-}
-
-const savedCloak = localStorage.getItem("cloak");
-if (savedCloak) cloak(savedCloak);
-
-/* ---------------- PANIC KEY ---------------- */
-document.addEventListener("keydown", e => {
-  if (e.key === "Escape" || e.key === "`") {
-    cloak("docs");
-  }
-});
-
-/* ---------------- SEARCH ---------------- */
-function filterGames() {
-  const q = document.getElementById("search").value.toLowerCase();
-  document.querySelectorAll(".game").forEach(g => {
-    g.style.display = g.dataset.name.includes(q) ? "block" : "none";
-  });
-}
-
-/* ---------------- HIGH SCORES ---------------- */
-function loadScores() {
-  const scores = JSON.parse(localStorage.getItem("highscores") || "{}");
-  for (const game in scores) {
-    const el = document.getElementById("score-" + game);
-    if (el) el.textContent = "Best: " + scores[game];
-  }
-}
-loadScores();
-</script>
+  <footer>
+    © 2026 PlayHub — More coming soon
+  </footer>
 
 </body>
 </html>

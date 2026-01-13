@@ -9,15 +9,17 @@ body {
   margin: 0;
   background: #111;
   color: white;
+  font-family: Arial, sans-serif;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   height: 100vh;
-  font-family: Arial, sans-serif;
 }
 
 #top {
+  display: flex;
+  gap: 10px;
   margin-bottom: 10px;
 }
 
@@ -27,7 +29,6 @@ canvas {
 }
 
 button {
-  margin-top: 10px;
   padding: 8px 14px;
   border: none;
   border-radius: 6px;
@@ -35,27 +36,47 @@ button {
   color: black;
   font-weight: bold;
 }
+
+#controls {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: 60px 60px 60px;
+  grid-template-rows: 60px 60px;
+  gap: 6px;
+}
 </style>
 </head>
-<body>
+<body tabindex="0">
 
-<h1>Snake</h1>
-<div id="top">Score: <span id="score">0</span></div>
+<div id="top">
+  <button onclick="location.href='/'">🏠 Home</button>
+  <div>Score: <span id="score">0</span></div>
+  <button onclick="restart()">Restart</button>
+</div>
+
 <canvas id="game" width="300" height="300"></canvas>
-<button onclick="restart()">Restart</button>
+
+<!-- Mobile Controls -->
+<div id="controls">
+  <div></div>
+  <button onclick="setDir(0,-10)">⬆️</button>
+  <div></div>
+  <button onclick="setDir(-10,0)">⬅️</button>
+  <button onclick="setDir(10,0)">➡️</button>
+  <button onclick="setDir(0,10)">⬇️</button>
+</div>
 
 <script>
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 const scoreEl = document.getElementById("score");
 
-let snake, food, dx, dy, score;
+let snake, food, dx, dy, score, loop;
 
 function start() {
   snake = [{x:150,y:150}];
   food = spawnFood();
-  dx = 10;
-  dy = 0;
+  dx = 10; dy = 0;
   score = 0;
   scoreEl.textContent = score;
 }
@@ -81,10 +102,12 @@ function draw() {
 function move() {
   const head = {x: snake[0].x + dx, y: snake[0].y + dy};
 
-  if (head.x < 0 || head.y < 0 || head.x >= 300 || head.y >= 300 ||
-      snake.some(p => p.x === head.x && p.y === head.y)) {
-    alert("Game Over");
-    start();
+  if (
+    head.x < 0 || head.y < 0 ||
+    head.x >= 300 || head.y >= 300 ||
+    snake.some(p => p.x === head.x && p.y === head.y)
+  ) {
+    restart();
     return;
   }
 
@@ -99,24 +122,28 @@ function move() {
   }
 }
 
-document.addEventListener("keydown", e => {
-  if (e.key === "ArrowUp" && dy === 0) {dx=0;dy=-10;}
-  if (e.key === "ArrowDown" && dy === 0) {dx=0;dy=10;}
-  if (e.key === "ArrowLeft" && dx === 0) {dx=-10;dy=0;}
-  if (e.key === "ArrowRight" && dx === 0) {dx=10;dy=0;}
+function setDir(x,y) {
+  if (dx === -x && dy === -y) return;
+  dx = x; dy = y;
+}
+
+window.addEventListener("keydown", e => {
+  if (e.key === "ArrowUp") setDir(0,-10);
+  if (e.key === "ArrowDown") setDir(0,10);
+  if (e.key === "ArrowLeft") setDir(-10,0);
+  if (e.key === "ArrowRight") setDir(10,0);
 });
 
-function loop() {
-  move();
-  draw();
-}
-
 function restart() {
+  clearInterval(loop);
   start();
+  loop = setInterval(() => {
+    move();
+    draw();
+  }, 100);
 }
 
-start();
-setInterval(loop, 100);
+restart();
 </script>
 
 </body>

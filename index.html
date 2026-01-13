@@ -5,7 +5,6 @@
 <title>PlayHub</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- Default favicon -->
 <link id="favicon" rel="icon" href="https://www.google.com/favicon.ico">
 
 <style>
@@ -22,22 +21,26 @@ header {
   background: #020617;
 }
 
-header h1 {
+h1 {
   margin: 0;
   font-size: 28px;
 }
 
-header p {
-  margin: 5px 0 0;
+p {
+  margin: 5px 0;
   color: #94a3b8;
 }
 
-#cloak {
-  margin-top: 10px;
+#controls {
+  margin-top: 12px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
-select {
-  padding: 6px 10px;
+select, input {
+  padding: 8px 10px;
   border-radius: 6px;
   border: none;
   font-size: 14px;
@@ -45,7 +48,7 @@ select {
 
 #games {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 16px;
   padding: 20px;
 }
@@ -53,7 +56,7 @@ select {
 .game {
   background: #1e293b;
   border-radius: 12px;
-  padding: 20px;
+  padding: 16px;
   text-align: center;
   text-decoration: none;
   color: white;
@@ -68,7 +71,12 @@ select {
 .game span {
   font-size: 36px;
   display: block;
-  margin-bottom: 10px;
+}
+
+.score {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-top: 6px;
 }
 
 footer {
@@ -85,8 +93,11 @@ footer {
   <h1 id="titleText">PlayHub</h1>
   <p>Unblocked Games • Fast • Free</p>
 
-  <!-- TAB CLOAKER -->
-  <div id="cloak">
+  <div id="controls">
+    <!-- Search -->
+    <input type="text" id="search" placeholder="Search games..." onkeyup="filterGames()">
+
+    <!-- Tab Cloak -->
     <select onchange="cloak(this.value)">
       <option value="">Tab Cloak</option>
       <option value="docs">Google Docs</option>
@@ -99,22 +110,25 @@ footer {
 </header>
 
 <section id="games">
-  <a class="game" href="games/2048/">
+  <a class="game" href="games/2048/" data-name="2048">
     <span>🧩</span>
     2048
+    <div class="score" id="score-2048">Best: 0</div>
   </a>
 
-  <a class="game" href="games/snake/">
+  <a class="game" href="games/snake/" data-name="snake">
     <span>🐍</span>
     Snake
+    <div class="score" id="score-snake">Best: 0</div>
   </a>
 </section>
 
 <footer>
-  © 2026 PlayHub
+  Press <b>~</b> or <b>ESC</b> for Panic
 </footer>
 
 <script>
+/* ---------------- TAB CLOAK ---------------- */
 const presets = {
   docs: {
     title: "Google Docs",
@@ -140,17 +154,39 @@ const presets = {
 
 function cloak(type) {
   if (!presets[type]) return;
-
   document.title = presets[type].title;
   document.getElementById("favicon").href = presets[type].icon;
   document.getElementById("titleText").textContent = presets[type].title;
-
   localStorage.setItem("cloak", type);
 }
 
-// Restore cloak on refresh
-const saved = localStorage.getItem("cloak");
-if (saved) cloak(saved);
+const savedCloak = localStorage.getItem("cloak");
+if (savedCloak) cloak(savedCloak);
+
+/* ---------------- PANIC KEY ---------------- */
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape" || e.key === "`") {
+    cloak("docs");
+  }
+});
+
+/* ---------------- SEARCH ---------------- */
+function filterGames() {
+  const q = document.getElementById("search").value.toLowerCase();
+  document.querySelectorAll(".game").forEach(g => {
+    g.style.display = g.dataset.name.includes(q) ? "block" : "none";
+  });
+}
+
+/* ---------------- HIGH SCORES ---------------- */
+function loadScores() {
+  const scores = JSON.parse(localStorage.getItem("highscores") || "{}");
+  for (const game in scores) {
+    const el = document.getElementById("score-" + game);
+    if (el) el.textContent = "Best: " + scores[game];
+  }
+}
+loadScores();
 </script>
 
 </body>

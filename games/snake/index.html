@@ -1,1 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Snake | PlayHub</title>
 
+  <style>
+    body {
+      margin: 0;
+      background: #0b1020;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    header {
+      width: 100%;
+      padding: 15px;
+      background: #111827;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-sizing: border-box;
+    }
+
+    header h1 {
+      font-size: 18px;
+      margin: 0;
+    }
+
+    header a {
+      color: white;
+      text-decoration: none;
+      background: #2563eb;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    canvas {
+      background: #020617;
+      border: 2px solid #1e293b;
+      margin-top: 20px;
+      touch-action: none;
+    }
+
+    .controls {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: repeat(3, 70px);
+      grid-gap: 10px;
+    }
+
+    .controls button {
+      padding: 15px;
+      font-size: 18px;
+      border: none;
+      border-radius: 8px;
+      background: #1e293b;
+      color: white;
+    }
+
+    footer {
+      margin-top: auto;
+      padding: 10px;
+      font-size: 12px;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🐍 Snake</h1>
+    <a href="/">🏠 Home</a>
+  </header>
+
+  <canvas id="game" width="320" height="320"></canvas>
+
+  <!-- Mobile controls -->
+  <div class="controls">
+    <div></div>
+    <button onclick="setDir(0,-1)">⬆️</button>
+    <div></div>
+    <button onclick="setDir(-1,0)">⬅️</button>
+    <button onclick="restart()">🔄</button>
+    <button onclick="setDir(1,0)">➡️</button>
+    <div></div>
+    <button onclick="setDir(0,1)">⬇️</button>
+    <div></div>
+  </div>
+
+  <footer>© 2026 PlayHub</footer>
+
+  <script>
+    const canvas = document.getElementById("game");
+    const ctx = canvas.getContext("2d");
+
+    const gridSize = 16;
+    const tileCount = canvas.width / gridSize;
+
+    let snake, food, dx, dy, score;
+
+    function restart() {
+      snake = [{ x: 10, y: 10 }];
+      food = randomFood();
+      dx = 1;
+      dy = 0;
+      score = 0;
+    }
+
+    function randomFood() {
+      return {
+        x: Math.floor(Math.random() * tileCount),
+        y: Math.floor(Math.random() * tileCount)
+      };
+    }
+
+    function setDir(x, y) {
+      if (-x === dx && -y === dy) return;
+      dx = x;
+      dy = y;
+    }
+
+    document.addEventListener("keydown", e => {
+      if (e.key === "ArrowUp") setDir(0, -1);
+      if (e.key === "ArrowDown") setDir(0, 1);
+      if (e.key === "ArrowLeft") setDir(-1, 0);
+      if (e.key === "ArrowRight") setDir(1, 0);
+    });
+
+    function gameLoop() {
+      const head = {
+        x: snake[0].x + dx,
+        y: snake[0].y + dy
+      };
+
+      if (
+        head.x < 0 || head.y < 0 ||
+        head.x >= tileCount || head.y >= tileCount ||
+        snake.some(s => s.x === head.x && s.y === head.y)
+      ) {
+        restart();
+        return;
+      }
+
+      snake.unshift(head);
+
+      if (head.x === food.x && head.y === food.y) {
+        food = randomFood();
+        score++;
+      } else {
+        snake.pop();
+      }
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = "#22c55e";
+      snake.forEach(s => {
+        ctx.fillRect(
+          s.x * gridSize,
+          s.y * gridSize,
+          gridSize - 2,
+          gridSize - 2
+        );
+      });
+
+      ctx.fillStyle = "#ef4444";
+      ctx.fillRect(
+        food.x * gridSize,
+        food.y * gridSize,
+        gridSize - 2,
+        gridSize - 2
+      );
+    }
+
+    restart();
+    setInterval(gameLoop, 120);
+  </script>
+
+</body>
+</html>

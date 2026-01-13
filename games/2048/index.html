@@ -14,16 +14,63 @@ body {
   height: 100vh;
   font-family: Arial, sans-serif;
 }
-iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
+
+#game {
+  width: 300px;
+  height: 300px;
+  background: #bbada0;
+  border-radius: 10px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  padding: 10px;
+}
+
+.tile {
+  background: #cdc1b4;
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 32px;
+  font-weight: bold;
+  color: #776e65;
 }
 </style>
 </head>
 <body>
 
-<iframe src="https://play2048.co/"></iframe>
+<div id="game"></div>
+
+<script>
+const game = document.getElementById("game");
+let board = Array(16).fill(0);
+
+function draw() {
+  game.innerHTML = "";
+  board.forEach(v => {
+    const d = document.createElement("div");
+    d.className = "tile";
+    d.textContent = v === 0 ? "" : v;
+    game.appendChild(d);
+  });
+}
+
+function addTile() {
+  let empty = board.map((v,i)=>v===0?i:null).filter(v=>v!==null);
+  if (!empty.length) return;
+  board[empty[Math.floor(Math.random()*empty.length)]] = Math.random()>0.9?4:2;
+}
+
+function start() {
+  board.fill(0);
+  addTile();
+  addTile();
+  draw();
+}
+
+start();
+</script>
 
 </body>
 </html>

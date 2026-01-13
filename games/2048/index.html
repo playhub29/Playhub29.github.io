@@ -1,219 +1,180 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>2048</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>2048 – PlayHub</title>
+
 <style>
 body {
   margin: 0;
-  background: #faf8ef;
   font-family: Arial, sans-serif;
+  background: #0b1020;
+  color: #fff;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
 }
 
-#container {
-  text-align: center;
+.container {
+  background: #1a1f3a;
+  padding: 16px;
+  border-radius: 16px;
+  width: 320px;
 }
 
-h1 {
-  margin: 5px 0;
-}
-
-#top {
+.top {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
 }
 
-#score {
-  background: #bbada0;
-  color: white;
-  padding: 8px 12px;
-  border-radius: 6px;
-  font-weight: bold;
-}
-
 button {
-  padding: 8px 12px;
+  background: #5865f2;
   border: none;
-  border-radius: 6px;
-  background: #8f7a66;
-  color: white;
-  font-size: 13px;
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
 }
 
-#game {
-  width: min(90vw, 360px);
-  height: min(90vw, 360px);
+.grid {
   background: #bbada0;
   border-radius: 10px;
+  padding: 10px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
-  padding: 10px;
-  box-sizing: border-box;
+  grid-gap: 10px;
 }
 
-.tile {
-  background: #cdc1b4;
+.cell {
+  width: 65px;
+  height: 65px;
+  background: rgba(238,228,218,.35);
   border-radius: 6px;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 32px;
+  font-size: 24px;
   font-weight: bold;
-  color: #776e65;
-  transition: background 0.15s;
+  transition: transform 0.15s ease;
 }
 
-.tile-0 { background: #cdc1b4; }
-.tile-2 { background: #eee4da; }
-.tile-4 { background: #ede0c8; }
-.tile-8 { background: #f2b179; color: #f9f6f2; }
-.tile-16 { background: #f59563; color: #f9f6f2; }
-.tile-32 { background: #f67c5f; color: #f9f6f2; }
-.tile-64 { background: #f65e3b; color: #f9f6f2; }
-.tile-128 { background: #edcf72; color: #f9f6f2; font-size: 24px; }
-.tile-256 { background: #edcc61; color: #f9f6f2; font-size: 24px; }
-.tile-512 { background: #edc850; color: #f9f6f2; font-size: 24px; }
-.tile-1024 { background: #edc53f; color: #f9f6f2; font-size: 20px; }
-.tile-2048 { background: #edc22e; color: #f9f6f2; font-size: 20px; }
+/* TILE COLORS */
+.tile-2 { background: #eee4da; color:#776e65; }
+.tile-4 { background: #ede0c8; color:#776e65; }
+.tile-8 { background: #f2b179; color:#fff; }
+.tile-16 { background: #f59563; color:#fff; }
+.tile-32 { background: #f67c5f; color:#fff; }
+.tile-64 { background: #f65e3b; color:#fff; }
+.tile-128 { background: #edcf72; color:#fff; }
+.tile-256 { background: #edcc61; color:#fff; }
+.tile-512 { background: #edc850; color:#fff; }
+.tile-1024 { background: #edc53f; color:#fff; }
+.tile-2048 { background: #edc22e; color:#fff; }
 
-#over {
+.footer {
+  text-align: center;
+  font-size: 12px;
   margin-top: 10px;
-  color: red;
-  font-weight: bold;
+  opacity: 0.6;
 }
 </style>
 </head>
+
 <body>
-
-<div id="container">
-  <h1>2048</h1>
-
-  <div id="top">
-    <div id="score">Score: 0</div>
-    <button onclick="restart()">Restart</button>
-    <button onclick="fullscreen()">Fullscreen</button>
+<div class="container">
+  <div class="top">
+    <h2>2048</h2>
+    <button onclick="location.href='../../index.html'">🏠 Home</button>
   </div>
 
-  <div id="game"></div>
-  <div id="over"></div>
+  <div id="grid" class="grid"></div>
+
+  <div class="footer">PlayHub</div>
 </div>
 
 <script>
-const game = document.getElementById("game");
-const scoreEl = document.getElementById("score");
-const overEl = document.getElementById("over");
+const grid = document.getElementById("grid");
+let cells = Array(16).fill(0);
 
-let board = Array(16).fill(0);
-let score = 0;
-
-// Create tiles ONCE
-for (let i = 0; i < 16; i++) {
-  const d = document.createElement("div");
-  d.className = "tile tile-0";
-  game.appendChild(d);
-}
-
-function draw() {
-  board.forEach((v, i) => {
-    const t = game.children[i];
-    t.textContent = v === 0 ? "" : v;
-    t.className = "tile tile-" + v;
-  });
-  scoreEl.textContent = "Score: " + score;
+function start() {
+  cells.fill(0);
+  addTile();
+  addTile();
+  render();
 }
 
 function addTile() {
-  let empty = board.map((v,i)=>v===0?i:null).filter(v=>v!==null);
+  let empty = cells
+    .map((v,i)=>v===0?i:null)
+    .filter(v=>v!==null);
   if (!empty.length) return;
-  board[empty[Math.floor(Math.random()*empty.length)]] = Math.random() > 0.9 ? 4 : 2;
+  let i = empty[Math.floor(Math.random()*empty.length)];
+  cells[i] = Math.random() > 0.9 ? 4 : 2;
+}
+
+function render() {
+  grid.innerHTML = "";
+  cells.forEach(v=>{
+    let d = document.createElement("div");
+    d.className = "cell";
+    if (v) {
+      d.textContent = v;
+      d.classList.add("tile-"+v);
+    }
+    grid.appendChild(d);
+  });
 }
 
 function slide(row) {
-  row = row.filter(v=>v);
-  for (let i=0;i<row.length-1;i++) {
-    if (row[i] === row[i+1]) {
-      row[i] *= 2;
-      score += row[i];
-      row[i+1] = 0;
+  let arr = row.filter(v=>v);
+  for (let i=0;i<arr.length-1;i++){
+    if(arr[i]===arr[i+1]){
+      arr[i]*=2;
+      arr[i+1]=0;
     }
   }
-  return row.filter(v=>v);
+  return arr.filter(v=>v).concat(Array(4-arr.filter(v=>v).length).fill(0));
 }
 
-function move(dir) {
-  let old = board.slice();
-  for (let r=0;r<4;r++) {
-    let row = [];
-    for (let c=0;c<4;c++) {
-      let i = dir < 2 ? r*4+c : c*4+r;
-      row.push(board[i]);
+function move(dir){
+  let moved=false;
+  let old=[...cells];
+  for(let r=0;r<4;r++){
+    let row=[];
+    for(let c=0;c<4;c++){
+      let i=dir==="left"?r*4+c:
+            dir==="right"?r*4+(3-c):
+            dir==="up"?c*4+r:
+            (3-c)*4+r;
+      row.push(cells[i]);
     }
-    if (dir % 2) row.reverse();
-    row = slide(row);
-    while (row.length < 4) row.push(0);
-    if (dir % 2) row.reverse();
-    for (let c=0;c<4;c++) {
-      let i = dir < 2 ? r*4+c : c*4+r;
-      board[i] = row[c];
+    row=slide(row);
+    for(let c=0;c<4;c++){
+      let i=dir==="left"?r*4+c:
+            dir==="right"?r*4+(3-c):
+            dir==="up"?c*4+r:
+            (3-c)*4+r;
+      cells[i]=row[c];
     }
   }
-  if (board.toString() !== old.toString()) {
+  if(JSON.stringify(old)!==JSON.stringify(cells)){
     addTile();
-    draw();
-    checkGameOver();
+    render();
   }
 }
 
-function checkGameOver() {
-  if (board.includes(0)) return;
-  for (let i=0;i<16;i++) {
-    if (board[i] === board[i+1] || board[i] === board[i+4]) return;
-  }
-  overEl.textContent = "Game Over!";
-}
-
-document.addEventListener("keydown", e => {
-  if (e.key==="ArrowLeft") move(0);
-  if (e.key==="ArrowRight") move(1);
-  if (e.key==="ArrowUp") move(2);
-  if (e.key==="ArrowDown") move(3);
+document.addEventListener("keydown",e=>{
+  if(e.key==="ArrowLeft")move("left");
+  if(e.key==="ArrowRight")move("right");
+  if(e.key==="ArrowUp")move("up");
+  if(e.key==="ArrowDown")move("down");
 });
 
-let sx, sy;
-game.addEventListener("touchstart", e=>{
-  sx = e.touches[0].clientX;
-  sy = e.touches[0].clientY;
-});
-game.addEventListener("touchend", e=>{
-  let dx = e.changedTouches[0].clientX - sx;
-  let dy = e.changedTouches[0].clientY - sy;
-  if (Math.abs(dx)>Math.abs(dy)) move(dx>0?1:0);
-  else move(dy>0?3:2);
-});
-
-function fullscreen() {
-  document.documentElement.requestFullscreen?.();
-}
-
-function restart() {
-  board.fill(0);
-  score = 0;
-  overEl.textContent = "";
-  addTile();
-  addTile();
-  draw();
-}
-
-restart();
+start();
 </script>
-
 </body>
 </html>

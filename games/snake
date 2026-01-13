@@ -2,149 +2,154 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Snake</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Snake – PlayHub</title>
+
 <style>
 body {
   margin: 0;
-  background: #111;
-  color: white;
+  background: #0b1020;
+  color: #fff;
   font-family: Arial, sans-serif;
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   height: 100vh;
 }
 
-#top {
+.container {
+  background: #1a1f3a;
+  padding: 16px;
+  border-radius: 16px;
+  width: 320px;
+  text-align: center;
+}
+
+.top {
   display: flex;
-  gap: 10px;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 10px;
+}
+
+button {
+  background: #5865f2;
+  border: none;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
 }
 
 canvas {
   background: #000;
-  border: 2px solid #444;
-}
-
-button {
-  padding: 8px 14px;
-  border: none;
-  border-radius: 6px;
-  background: #22c55e;
-  color: black;
-  font-weight: bold;
-}
-
-#controls {
-  margin-top: 12px;
-  display: grid;
-  grid-template-columns: 60px 60px 60px;
-  grid-template-rows: 60px 60px;
-  gap: 6px;
+  border-radius: 10px;
 }
 </style>
 </head>
-<body tabindex="0">
 
-<div id="top">
-  <button onclick="location.href='/'">🏠 Home</button>
-  <div>Score: <span id="score">0</span></div>
-  <button onclick="restart()">Restart</button>
-</div>
+<body>
+<div class="container">
+  <div class="top">
+    <h2>Snake</h2>
+    <button onclick="location.href='../../index.html'">🏠 Home</button>
+  </div>
 
-<canvas id="game" width="300" height="300"></canvas>
-
-<!-- Mobile Controls -->
-<div id="controls">
-  <div></div>
-  <button onclick="setDir(0,-10)">⬆️</button>
-  <div></div>
-  <button onclick="setDir(-10,0)">⬅️</button>
-  <button onclick="setDir(10,0)">➡️</button>
-  <button onclick="setDir(0,10)">⬇️</button>
+  <canvas id="game" width="280" height="280"></canvas>
+  <p id="status"></p>
 </div>
 
 <script>
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
-const scoreEl = document.getElementById("score");
 
-let snake, food, dx, dy, score, loop;
+const size = 14;
+const tiles = canvas.width / size;
+
+let snake, food, dir, running;
 
 function start() {
-  snake = [{x:150,y:150}];
-  food = spawnFood();
-  dx = 10; dy = 0;
-  score = 0;
-  scoreEl.textContent = score;
+  snake = [{x:7,y:7}];
+  dir = {x:1,y:0};
+  placeFood();
+  running = true;
+  document.getElementById("status").textContent = "";
 }
 
-function spawnFood() {
-  return {
-    x: Math.floor(Math.random()*30)*10,
-    y: Math.floor(Math.random()*30)*10
+function placeFood() {
+  food = {
+    x: Math.floor(Math.random()*tiles),
+    y: Math.floor(Math.random()*tiles)
   };
 }
 
-function draw() {
-  ctx.fillStyle = "#000";
-  ctx.fillRect(0,0,300,300);
+function loop() {
+  if (!running) return;
 
-  ctx.fillStyle = "red";
-  ctx.fillRect(food.x, food.y, 10, 10);
-
-  ctx.fillStyle = "#22c55e";
-  snake.forEach(p => ctx.fillRect(p.x, p.y, 10, 10));
-}
-
-function move() {
-  const head = {x: snake[0].x + dx, y: snake[0].y + dy};
+  const head = {x: snake[0].x + dir.x, y: snake[0].y + dir.y};
 
   if (
     head.x < 0 || head.y < 0 ||
-    head.x >= 300 || head.y >= 300 ||
-    snake.some(p => p.x === head.x && p.y === head.y)
+    head.x >= tiles || head.y >= tiles ||
+    snake.some(s => s.x === head.x && s.y === head.y)
   ) {
-    restart();
+    running = false;
+    document.getElementById("status").textContent = "Game Over — Refresh to restart";
     return;
   }
 
   snake.unshift(head);
 
   if (head.x === food.x && head.y === food.y) {
-    score++;
-    scoreEl.textContent = score;
-    food = spawnFood();
+    placeFood();
   } else {
     snake.pop();
   }
+
+  draw();
 }
 
-function setDir(x,y) {
-  if (dx === -x && dy === -y) return;
-  dx = x; dy = y;
+function draw() {
+  ctx.fillStyle = "#000";
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  ctx.fillStyle = "#4ade80";
+  snake.forEach(s =>
+    ctx.fillRect(s.x*size, s.y*size, size-1, size-1)
+  );
+
+  ctx.fillStyle = "#f87171";
+  ctx.fillRect(food.x*size, food.y*size, size-1, size-1);
 }
 
-window.addEventListener("keydown", e => {
-  if (e.key === "ArrowUp") setDir(0,-10);
-  if (e.key === "ArrowDown") setDir(0,10);
-  if (e.key === "ArrowLeft") setDir(-10,0);
-  if (e.key === "ArrowRight") setDir(10,0);
+document.addEventListener("keydown", e => {
+  if (e.key==="ArrowUp" && dir.y===0) dir={x:0,y:-1};
+  if (e.key==="ArrowDown" && dir.y===0) dir={x:0,y:1};
+  if (e.key==="ArrowLeft" && dir.x===0) dir={x:-1,y:0};
+  if (e.key==="ArrowRight" && dir.x===0) dir={x:1,y:0};
 });
 
-function restart() {
-  clearInterval(loop);
-  start();
-  loop = setInterval(() => {
-    move();
-    draw();
-  }, 100);
-}
+/* MOBILE SWIPE SUPPORT */
+let startX, startY;
+canvas.addEventListener("touchstart", e=>{
+  startX=e.touches[0].clientX;
+  startY=e.touches[0].clientY;
+});
 
-restart();
+canvas.addEventListener("touchend", e=>{
+  let dx=e.changedTouches[0].clientX-startX;
+  let dy=e.changedTouches[0].clientY-startY;
+  if(Math.abs(dx)>Math.abs(dy)){
+    if(dx>0 && dir.x===0)dir={x:1,y:0};
+    if(dx<0 && dir.x===0)dir={x:-1,y:0};
+  } else {
+    if(dy>0 && dir.y===0)dir={x:0,y:1};
+    if(dy<0 && dir.y===0)dir={x:0,y:-1};
+  }
+});
+
+start();
+setInterval(loop,120);
 </script>
-
 </body>
 </html>

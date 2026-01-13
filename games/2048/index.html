@@ -2,26 +2,36 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>2048</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
-  <div class="top-bar">
-    <button onclick="location.href='../../index.html'">🏠 Home</button>
-    <button onclick="restart()">🔄 Restart</button>
-  </div>
-
-  <div class="score-bar">
-    <div>Score: <span id="score">0</span></div>
-    <div>High: <span id="high">0</span></div>
-  </div>
-
   <div class="game-container">
-    <div id="grid"></div>
-  </div>
 
-  <button class="fullscreen" onclick="toggleFullscreen()">⛶ Fullscreen</button>
+    <!-- TOP BAR -->
+    <div class="top-bar">
+      <button onclick="location.href='/'">🏠 Home</button>
+
+      <div class="score">
+        Score: <span id="score">0</span> |
+        High: <span id="high">0</span>
+      </div>
+
+      <button onclick="startGame()">🔄 Restart</button>
+    </div>
+
+    <!-- GAME BOARD -->
+    <div id="board" class="board">
+      <!-- GAME OVER OVERLAY -->
+      <div id="overlay" class="overlay">
+        <h1>Game Over</h1>
+        <button onclick="startGame()">Restart</button>
+      </div>
+    </div>
+
+  </div>
 
   <script src="game.js"></script>
 </body>

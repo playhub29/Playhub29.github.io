@@ -8,29 +8,43 @@
 body {
   margin: 0;
   background: #faf8ef;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
   font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+#container {
+  text-align: center;
 }
 
 h1 {
+  margin: 5px 0;
+}
+
+#top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 10px;
 }
 
-#controls {
-  margin-bottom: 10px;
+#score {
+  background: #bbada0;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-weight: bold;
 }
 
 button {
-  padding: 10px 16px;
-  font-size: 14px;
+  padding: 8px 12px;
   border: none;
   border-radius: 6px;
   background: #8f7a66;
   color: white;
+  font-size: 13px;
 }
 
 #game {
@@ -54,37 +68,72 @@ button {
   font-size: 32px;
   font-weight: bold;
   color: #776e65;
+  transition: background 0.15s;
+}
+
+.tile-0 { background: #cdc1b4; }
+.tile-2 { background: #eee4da; }
+.tile-4 { background: #ede0c8; }
+.tile-8 { background: #f2b179; color: #f9f6f2; }
+.tile-16 { background: #f59563; color: #f9f6f2; }
+.tile-32 { background: #f67c5f; color: #f9f6f2; }
+.tile-64 { background: #f65e3b; color: #f9f6f2; }
+.tile-128 { background: #edcf72; color: #f9f6f2; font-size: 24px; }
+.tile-256 { background: #edcc61; color: #f9f6f2; font-size: 24px; }
+.tile-512 { background: #edc850; color: #f9f6f2; font-size: 24px; }
+.tile-1024 { background: #edc53f; color: #f9f6f2; font-size: 20px; }
+.tile-2048 { background: #edc22e; color: #f9f6f2; font-size: 20px; }
+
+#over {
+  margin-top: 10px;
+  color: red;
+  font-weight: bold;
 }
 </style>
 </head>
 <body>
 
-<h1>2048</h1>
+<div id="container">
+  <h1>2048</h1>
 
-<div id="controls">
-  <button onclick="fullscreen()">Fullscreen</button>
+  <div id="top">
+    <div id="score">Score: 0</div>
+    <button onclick="restart()">Restart</button>
+    <button onclick="fullscreen()">Fullscreen</button>
+  </div>
+
+  <div id="game"></div>
+  <div id="over"></div>
 </div>
-
-<div id="game"></div>
 
 <script>
 const game = document.getElementById("game");
+const scoreEl = document.getElementById("score");
+const overEl = document.getElementById("over");
+
 let board = Array(16).fill(0);
+let score = 0;
+
+// Create tiles ONCE
+for (let i = 0; i < 16; i++) {
+  const d = document.createElement("div");
+  d.className = "tile tile-0";
+  game.appendChild(d);
+}
 
 function draw() {
-  game.innerHTML = "";
-  board.forEach(v => {
-    const d = document.createElement("div");
-    d.className = "tile";
-    d.textContent = v === 0 ? "" : v;
-    game.appendChild(d);
+  board.forEach((v, i) => {
+    const t = game.children[i];
+    t.textContent = v === 0 ? "" : v;
+    t.className = "tile tile-" + v;
   });
+  scoreEl.textContent = "Score: " + score;
 }
 
 function addTile() {
   let empty = board.map((v,i)=>v===0?i:null).filter(v=>v!==null);
   if (!empty.length) return;
-  board[empty[Math.floor(Math.random()*empty.length)]] = Math.random()>0.9?4:2;
+  board[empty[Math.floor(Math.random()*empty.length)]] = Math.random() > 0.9 ? 4 : 2;
 }
 
 function slide(row) {
@@ -92,6 +141,7 @@ function slide(row) {
   for (let i=0;i<row.length-1;i++) {
     if (row[i] === row[i+1]) {
       row[i] *= 2;
+      score += row[i];
       row[i+1] = 0;
     }
   }
@@ -108,15 +158,26 @@ function move(dir) {
     }
     if (dir % 2) row.reverse();
     row = slide(row);
-    while (row.length<4) row.push(0);
+    while (row.length < 4) row.push(0);
     if (dir % 2) row.reverse();
     for (let c=0;c<4;c++) {
       let i = dir < 2 ? r*4+c : c*4+r;
       board[i] = row[c];
     }
   }
-  if (board.toString() !== old.toString()) addTile();
-  draw();
+  if (board.toString() !== old.toString()) {
+    addTile();
+    draw();
+    checkGameOver();
+  }
+}
+
+function checkGameOver() {
+  if (board.includes(0)) return;
+  for (let i=0;i<16;i++) {
+    if (board[i] === board[i+1] || board[i] === board[i+4]) return;
+  }
+  overEl.textContent = "Game Over!";
 }
 
 document.addEventListener("keydown", e => {
@@ -142,13 +203,16 @@ function fullscreen() {
   document.documentElement.requestFullscreen?.();
 }
 
-function start() {
+function restart() {
   board.fill(0);
+  score = 0;
+  overEl.textContent = "";
   addTile();
   addTile();
   draw();
 }
-start();
+
+restart();
 </script>
 
 </body>

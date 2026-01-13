@@ -1,43 +1,49 @@
-const grid = document.getElementById("grid");
+const board = document.getElementById("board");
 const scoreEl = document.getElementById("score");
 const highEl = document.getElementById("high");
+const overlay = document.getElementById("overlay");
 
-let board = Array(16).fill(0);
-let score = 0;
-let high = localStorage.getItem("2048-high") || 0;
+let grid, score;
+let highScore = localStorage.getItem("2048-high") || 0;
+highEl.textContent = highScore;
 
-highEl.textContent = high;
-
-function start() {
-  board = Array(16).fill(0);
+function startGame() {
+  grid = Array(16).fill(0);
   score = 0;
+  overlay.classList.remove("show");
   addTile();
   addTile();
-  draw();
-}
-
-function draw() {
-  grid.innerHTML = "";
-  board.forEach(val => {
-    const tile = document.createElement("div");
-    tile.className = "tile";
-    if (val) {
-      tile.textContent = val;
-      tile.classList.add(`tile-${val}`);
-    }
-    grid.appendChild(tile);
-  });
-  scoreEl.textContent = score;
+  render();
 }
 
 function addTile() {
-  const empty = board
+  const empty = grid
     .map((v, i) => v === 0 ? i : null)
     .filter(v => v !== null);
 
   if (!empty.length) return;
   const i = empty[Math.floor(Math.random() * empty.length)];
-  board[i] = Math.random() > 0.9 ? 4 : 2;
+  grid[i] = Math.random() < 0.9 ? 2 : 4;
+}
+
+function render() {
+  board.innerHTML = "";
+  grid.forEach(v => {
+    const cell = document.createElement("div");
+    cell.className = "cell";
+    if (v) {
+      cell.textContent = v;
+      cell.classList.add(`tile-${v}`);
+    }
+    board.appendChild(cell);
+  });
+
+  scoreEl.textContent = score;
+  if (score > highScore) {
+    highScore = score;
+    highEl.textContent = highScore;
+    localStorage.setItem("2048-high", highScore);
+  }
 }
 
 function slide(row) {
@@ -54,30 +60,30 @@ function slide(row) {
 
 function move(dir) {
   let moved = false;
+
   for (let i = 0; i < 4; i++) {
     let row = [];
     for (let j = 0; j < 4; j++) {
-      let idx =
+      const idx =
         dir === "left" ? i * 4 + j :
         dir === "right" ? i * 4 + (3 - j) :
         dir === "up" ? j * 4 + i :
         (3 - j) * 4 + i;
-
-      row.push(board[idx]);
+      row.push(grid[idx]);
     }
 
-    let newRow = slide(row);
+    const newRow = slide(row);
     while (newRow.length < 4) newRow.push(0);
 
     for (let j = 0; j < 4; j++) {
-      let idx =
+      const idx =
         dir === "left" ? i * 4 + j :
         dir === "right" ? i * 4 + (3 - j) :
         dir === "up" ? j * 4 + i :
         (3 - j) * 4 + i;
 
-      if (board[idx] !== newRow[j]) {
-        board[idx] = newRow[j];
+      if (grid[idx] !== newRow[j]) {
+        grid[idx] = newRow[j];
         moved = true;
       }
     }
@@ -85,23 +91,23 @@ function move(dir) {
 
   if (moved) {
     addTile();
-    draw();
-    if (score > high) {
-      high = score;
-      localStorage.setItem("2048-high", high);
-      highEl.textContent = high;
-    }
+    render();
+    if (isGameOver()) overlay.classList.add("show");
   }
 }
 
-function restart() {
-  start();
+function isGameOver() {
+  if (grid.includes(0)) return false;
+  for (let i = 0; i < 16; i++) {
+    if (
+      grid[i] === grid[i + 1] ||
+      grid[i] === grid[i + 4]
+    ) return false;
+  }
+  return true;
 }
 
-function toggleFullscreen() {
-  document.documentElement.requestFullscreen?.();
-}
-
+/* KEYBOARD */
 document.addEventListener("keydown", e => {
   if (e.key === "ArrowLeft") move("left");
   if (e.key === "ArrowRight") move("right");
@@ -109,4 +115,24 @@ document.addEventListener("keydown", e => {
   if (e.key === "ArrowDown") move("down");
 });
 
-start();
+/* TOUCH SWIPE */
+let startX, startY;
+document.addEventListener("touchstart", e => {
+  startX = e.touches[0].clientX;
+  startY = e.touches[0].clientY;
+});
+
+document.addEventListener("touchend", e => {
+  const dx = e.changedTouches[0].clientX - startX;
+  const dy = e.changedTouches[0].clientY - startY;
+
+  if (Math.abs(dx) > Math.abs(dy)) {
+    if (dx > 30) move("right");
+    if (dx < -30) move("left");
+  } else {
+    if (dy > 30) move("down");
+    if (dy < -30) move("up");
+  }
+});
+
+startGame();

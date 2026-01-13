@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <title>PlayHub</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Default favicon -->
+<link id="favicon" rel="icon" href="https://www.google.com/favicon.ico">
+
 <style>
 body {
   margin: 0;
@@ -26,6 +30,17 @@ header h1 {
 header p {
   margin: 5px 0 0;
   color: #94a3b8;
+}
+
+#cloak {
+  margin-top: 10px;
+}
+
+select {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: none;
+  font-size: 14px;
 }
 
 #games {
@@ -67,8 +82,20 @@ footer {
 <body>
 
 <header>
-  <h1>PlayHub</h1>
+  <h1 id="titleText">PlayHub</h1>
   <p>Unblocked Games • Fast • Free</p>
+
+  <!-- TAB CLOAKER -->
+  <div id="cloak">
+    <select onchange="cloak(this.value)">
+      <option value="">Tab Cloak</option>
+      <option value="docs">Google Docs</option>
+      <option value="classroom">Google Classroom</option>
+      <option value="drive">Google Drive</option>
+      <option value="schoology">Schoology</option>
+      <option value="blank">Blank</option>
+    </select>
+  </div>
 </header>
 
 <section id="games">
@@ -86,6 +113,45 @@ footer {
 <footer>
   © 2026 PlayHub
 </footer>
+
+<script>
+const presets = {
+  docs: {
+    title: "Google Docs",
+    icon: "https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico"
+  },
+  classroom: {
+    title: "Google Classroom",
+    icon: "https://www.gstatic.com/classroom/favicon.png"
+  },
+  drive: {
+    title: "My Drive - Google Drive",
+    icon: "https://ssl.gstatic.com/images/branding/product/1x/drive_2020q4_32dp.png"
+  },
+  schoology: {
+    title: "Schoology",
+    icon: "https://www.schoology.com/favicon.ico"
+  },
+  blank: {
+    title: "New Tab",
+    icon: "https://www.google.com/favicon.ico"
+  }
+};
+
+function cloak(type) {
+  if (!presets[type]) return;
+
+  document.title = presets[type].title;
+  document.getElementById("favicon").href = presets[type].icon;
+  document.getElementById("titleText").textContent = presets[type].title;
+
+  localStorage.setItem("cloak", type);
+}
+
+// Restore cloak on refresh
+const saved = localStorage.getItem("cloak");
+if (saved) cloak(saved);
+</script>
 
 </body>
 </html>

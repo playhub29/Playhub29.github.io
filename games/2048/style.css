@@ -1,94 +1,152 @@
+/* ===== RESET ===== */
 * {
   box-sizing: border-box;
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
+  font-family: "Arial", sans-serif;
 }
 
 body {
-  margin: 0;
-  background: #0f172a;
-  color: #fff;
+  background: radial-gradient(circle at top, #0f172a, #020617);
+  min-height: 100vh;
   display: flex;
-  justify-content: center;
   align-items: center;
-  height: 100vh;
+  justify-content: center;
+  color: white;
 }
 
-.game-container {
-  width: min(90vmin, 420px);
+/* ===== GAME CONTAINER ===== */
+.game-wrapper {
+  width: 100%;
+  max-width: 420px;
+  padding: 16px;
 }
 
+.game-card {
+  background: #1e293b;
+  border-radius: 20px;
+  padding: 16px;
+  position: relative;
+}
+
+/* ===== TOP BAR ===== */
 .top-bar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
-button {
+.score-box {
+  text-align: center;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.top-btn {
   background: #2563eb;
   border: none;
   color: white;
-  padding: 8px 14px;
-  border-radius: 8px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 0.95rem;
   cursor: pointer;
-  font-weight: bold;
 }
 
-.score {
-  font-size: 16px;
+.top-btn:hover {
+  background: #1d4ed8;
 }
 
-.board {
-  background: #1e293b;
-  padding: 10px;
-  border-radius: 12px;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
+/* ===== BOARD ===== */
+.board-wrapper {
   position: relative;
 }
 
-.cell {
-  width: 100%;
+.board {
+  position: relative;
+  background: #0f172a;
+  border-radius: 16px;
+  padding: 12px;
+
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  gap: 10px;
+
   aspect-ratio: 1 / 1;
+}
+
+/* ===== CELLS ===== */
+.cell {
   background: #020617;
-  border-radius: 8px;
+  border-radius: 12px;
+}
+
+/* ===== TILES ===== */
+.tile {
+  position: absolute;
+  border-radius: 12px;
   display: flex;
-  justify-content: center;
   align-items: center;
-  font-size: clamp(20px, 6vmin, 32px);
+  justify-content: center;
   font-weight: bold;
   transition: transform 0.15s ease, background 0.15s ease;
 }
 
-/* TILE COLORS (REAL 2048 STYLE) */
-.tile-2 { background: #eee4da; color: #111; }
-.tile-4 { background: #ede0c8; color: #111; }
-.tile-8 { background: #f2b179; }
-.tile-16 { background: #f59563; }
-.tile-32 { background: #f67c5f; }
-.tile-64 { background: #f65e3b; }
-.tile-128 { background: #edcf72; }
-.tile-256 { background: #edcc61; }
-.tile-512 { background: #edc850; }
-.tile-1024 { background: #edc53f; }
-.tile-2048 { background: #edc22e; }
+/* Tile colors (REAL 2048 STYLE) */
+.tile-2    { background: #eee4da; color: #776e65; }
+.tile-4    { background: #ede0c8; color: #776e65; }
+.tile-8    { background: #f2b179; color: white; }
+.tile-16   { background: #f59563; color: white; }
+.tile-32   { background: #f67c5f; color: white; }
+.tile-64   { background: #f65e3b; color: white; }
+.tile-128  { background: #edcf72; color: white; }
+.tile-256  { background: #edcc61; color: white; }
+.tile-512  { background: #edc850; color: white; }
+.tile-1024 { background: #edc53f; color: white; }
+.tile-2048 { background: #edc22e; color: white; }
 
+/* Font size scaling */
+.tile-2, .tile-4 { font-size: 2rem; }
+.tile-8, .tile-16, .tile-32, .tile-64 { font-size: 1.8rem; }
+.tile-128, .tile-256, .tile-512 { font-size: 1.6rem; }
+.tile-1024, .tile-2048 { font-size: 1.3rem; }
+
+/* ===== OVERLAY ===== */
 .overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.75);
+  background: rgba(2, 6, 23, 0.92);
   display: none;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  border-radius: 12px;
-}
-
-.overlay.show {
-  display: flex;
+  justify-content: center;
+  z-index: 10;
+  border-radius: 16px;
 }
 
 .overlay h1 {
-  margin-bottom: 15px;
+  font-size: 2.4rem;
+  margin-bottom: 20px;
+}
+
+.overlay button {
+  padding: 12px 24px;
+  font-size: 1.1rem;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  background: #2563eb;
+  color: white;
+}
+
+.overlay button:hover {
+  background: #1d4ed8;
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 480px) {
+  .game-wrapper {
+    max-width: 360px;
+  }
 }

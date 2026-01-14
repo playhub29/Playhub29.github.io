@@ -1,34 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta charset="UTF-8">
+
+  <!-- Mobile / Fullscreen -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
   <title>2048</title>
-  <link rel="stylesheet" href="style.css" />
+
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-  <div class="game-container">
 
-    <!-- TOP BAR -->
-    <div class="top-bar">
-      <button onclick="location.href='/'">🏠 Home</button>
-
-      <div class="score">
-        Score: <span id="score">0</span> |
-        High: <span id="high">0</span>
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="scores">
+      <div class="score-box">
+        <div class="label">SCORE</div>
+        <div id="score">0</div>
       </div>
-
-      <button onclick="startGame()">🔄 Restart</button>
+      <div class="score-box">
+        <div class="label">BEST</div>
+        <div id="highScore">0</div>
+      </div>
     </div>
 
-    <!-- GAME BOARD -->
-    <div id="board" class="board">
-      <!-- GAME OVER OVERLAY -->
-      <div id="overlay" class="overlay">
-        <h1>Game Over</h1>
-        <button onclick="startGame()">Restart</button>
-      </div>
+    <button id="fullscreenBtn">Fullscreen</button>
+  </div>
+
+  <!-- GAME CONTAINER -->
+  <div id="game-container">
+
+    <!-- GRID -->
+    <div id="grid"></div>
+
+    <!-- OVERLAY -->
+    <div class="overlay" id="overlay">
+      <h1 id="overlayText"></h1>
+      <button id="overlayBtn">Restart</button>
     </div>
 
   </div>

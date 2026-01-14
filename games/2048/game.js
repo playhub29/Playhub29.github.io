@@ -2,12 +2,14 @@ const gridSize = 4;
 let board = [];
 let score = 0;
 let highScore = localStorage.getItem("highScore") || 0;
+let hasWon = false;
 
 const grid = document.getElementById("grid");
 const scoreEl = document.getElementById("score");
 const highScoreEl = document.getElementById("highScore");
 const overlay = document.getElementById("overlay");
 const overlayText = document.getElementById("overlayText");
+const overlayBtn = document.getElementById("overlayBtn");
 
 highScoreEl.textContent = highScore;
 
@@ -17,6 +19,7 @@ function init() {
     Array(gridSize).fill(0)
   );
   score = 0;
+  hasWon = false;
   overlay.style.display = "none";
   addRandomTile();
   addRandomTile();
@@ -52,23 +55,25 @@ function addRandomTile() {
       if (board[r][c] === 0) empty.push([r, c]);
     }
   }
-  if (empty.length === 0) return;
+  if (!empty.length) return;
 
   const [r, c] = empty[Math.floor(Math.random() * empty.length)];
   board[r][c] = Math.random() < 0.9 ? 2 : 4;
 }
 
-/* ===== SLIDE LOGIC ===== */
+/* ===== SLIDE ===== */
 function slide(row) {
   row = row.filter(v => v !== 0);
   for (let i = 0; i < row.length - 1; i++) {
     if (row[i] === row[i + 1]) {
       row[i] *= 2;
       score += row[i];
-      if (row[i] > highScore) {
-        highScore = row[i];
-        localStorage.setItem("highScore", highScore);
-      }
+
+      if (row[i] === 2048 && !hasWon) win();
+
+      highScore = Math.max(highScore, score);
+      localStorage.setItem("highScore", highScore);
+
       row[i + 1] = 0;
     }
   }
@@ -77,7 +82,7 @@ function slide(row) {
   return row;
 }
 
-/* ===== MOVE FUNCTIONS ===== */
+/* ===== MOVES ===== */
 function moveLeft() {
   let moved = false;
   for (let r = 0; r < gridSize; r++) {
@@ -101,8 +106,7 @@ function moveRight() {
 function moveUp() {
   let moved = false;
   for (let c = 0; c < gridSize; c++) {
-    let col = [];
-    for (let r = 0; r < gridSize; r++) col.push(board[r][c]);
+    let col = board.map(r => r[c]);
     const original = [...col];
     col = slide(col);
     for (let r = 0; r < gridSize; r++) board[r][c] = col[r];
@@ -114,8 +118,7 @@ function moveUp() {
 function moveDown() {
   let moved = false;
   for (let c = 0; c < gridSize; c++) {
-    let col = [];
-    for (let r = 0; r < gridSize; r++) col.push(board[r][c]);
+    let col = board.map(r => r[c]);
     const original = [...col];
     col = slide(col.reverse()).reverse();
     for (let r = 0; r < gridSize; r++) board[r][c] = col[r];
@@ -124,13 +127,13 @@ function moveDown() {
   return moved;
 }
 
-/* ===== GAME STATE ===== */
+/* ===== GAME STATES ===== */
 function canMove() {
   for (let r = 0; r < gridSize; r++) {
     for (let c = 0; c < gridSize; c++) {
       if (board[r][c] === 0) return true;
-      if (c < gridSize - 1 && board[r][c] === board[r][c + 1]) return true;
-      if (r < gridSize - 1 && board[r][c] === board[r + 1][c]) return true;
+      if (c < 3 && board[r][c] === board[r][c + 1]) return true;
+      if (r < 3 && board[r][c] === board[r + 1][c]) return true;
     }
   }
   return false;
@@ -138,8 +141,20 @@ function canMove() {
 
 function lose() {
   overlayText.textContent = "Game Over";
+  overlayBtn.textContent = "Restart";
   overlay.style.display = "flex";
 }
+
+function win() {
+  hasWon = true;
+  overlayText.textContent = "You Win!";
+  overlayBtn.textContent = "Keep Playing";
+  overlay.style.display = "flex";
+}
+
+overlayBtn.onclick = () => {
+  overlay.style.display = "none";
+};
 
 /* ===== INPUT ===== */
 document.addEventListener("keydown", e => {
@@ -156,9 +171,8 @@ document.addEventListener("keydown", e => {
   }
 });
 
-/* ===== TOUCH (MOBILE) ===== */
-let startX = 0;
-let startY = 0;
+/* ===== TOUCH ===== */
+let startX, startY;
 
 document.addEventListener("touchstart", e => {
   startX = e.touches[0].clientX;

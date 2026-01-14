@@ -214,3 +214,29 @@ body {
   from { transform: scale(0.85); }
   to { transform: scale(1); }
 }
+/* === FORCE CENTER & FIX RESIZE === */
+body {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.game-wrapper {
+  width: 320px;
+  max-width: 90vw;
+  margin: auto;
+}
+
+.grid {
+  width: 320px;
+  height: 320px;
+}
+
+@media (max-width: 480px) {
+  .game-wrapper,
+  .grid {
+    width: 280px;
+    height: 280px;
+  }
+}

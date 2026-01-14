@@ -181,3 +181,36 @@ body {
   font-weight: bold;
   transition: background 0.15s ease;
 }
+/* ===== FIX GRID SIZE ===== */
+#grid {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  background: #1b2435;
+  padding: 12px;
+  border-radius: 16px;
+}
+
+/* ===== TILE BASE ===== */
+.cell {
+  background: #0f172a;
+  border-radius: 12px;
+  font-size: 2rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.12s ease, background 0.12s ease;
+}
+
+/* ===== SPAWN ANIMATION ===== */
+.cell:not(:empty) {
+  animation: spawn 0.12s ease;
+}
+
+@keyframes spawn {
+  from { transform: scale(0.85); }
+  to { transform: scale(1); }
+}

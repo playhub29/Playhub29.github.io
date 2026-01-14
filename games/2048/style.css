@@ -160,3 +160,24 @@ body {
   50% { transform: scale(1.15); }
   100% { transform: scale(1); }
 }
+/* ===== REAL 2048 TILE COLORS ===== */
+.tile-2    { background: #eee4da; color: #776e65; }
+.tile-4    { background: #ede0c8; color: #776e65; }
+.tile-8    { background: #f2b179; color: #f9f6f2; }
+.tile-16   { background: #f59563; color: #f9f6f2; }
+.tile-32   { background: #f67c5f; color: #f9f6f2; }
+.tile-64   { background: #f65e3b; color: #f9f6f2; }
+.tile-128  { background: #edcf72; color: #f9f6f2; font-size: 1.6rem; }
+.tile-256  { background: #edcc61; color: #f9f6f2; font-size: 1.6rem; }
+.tile-512  { background: #edc850; color: #f9f6f2; font-size: 1.6rem; }
+.tile-1024 { background: #edc53f; color: #f9f6f2; font-size: 1.3rem; }
+.tile-2048 { background: #edc22e; color: #f9f6f2; font-size: 1.3rem; }
+
+/* Center numbers perfectly */
+.cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  transition: background 0.15s ease;
+}
